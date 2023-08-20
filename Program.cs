@@ -1,4 +1,6 @@
 using BlogAPIDotnet6.Data;
+using BlogAPIDotnet6.Repositories.Implementations;
+using BlogAPIDotnet6.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +14,8 @@ builder.Services.AddSwaggerGen();
 
 string dbConfig = "Server=localhost;Port=3306;Database=blogtechapi;Uid=arch;Pwd=1234;";
 builder.Services.AddDbContextPool<DataContext>(options => options.UseMySql(dbConfig, ServerVersion.AutoDetect(dbConfig)));
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var app = builder.Build();
 
