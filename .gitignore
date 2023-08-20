@@ -1,0 +1,30 @@
+# ASP.NET Core
+Folder.DotSettings.user
+
+# Build output
+/bin/
+/obj/
+Migrations/
+
+# Visual Studio Code
+.vscode/
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Mac OS
+.DS_Store
+
+# Thumbnails
+Thumbs.db
+
+# Entity Framework Core
+Model.cs
+Model.Designer.cs
+*.edmx
+*.edmx.diagram
+
+# NuGet
+*.nuget.props
+*.nuget.targets
