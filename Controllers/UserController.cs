@@ -20,7 +20,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(UserDto request)
+    public async Task<IActionResult> Register(UserRegisterDto request)
     {
         var passwordHelper = new PasswordHelper();
         passwordHelper.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -36,5 +36,28 @@ public class UserController : ControllerBase
         _userRepository.AddUser(user);
 
         return Ok(user);
+    }
+    
+    [HttpPost("login")]
+    public async Task<ActionResult<string>> Login(UserLoginDto request)
+    {
+        var user = _userRepository.GetUserByUsername(request.Username);
+        
+        if (user == null)
+        {
+            return BadRequest("User not found.");
+        }
+
+        var passwordHelper = new PasswordHelper();
+
+        if (!passwordHelper.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+        {
+            return BadRequest("Wrong password.");
+        }
+
+        var tokenHelper = new TokenHelper();
+        string token = tokenHelper.CreateToken(user, _configuration);
+
+        return Ok(token);
     }
 }
