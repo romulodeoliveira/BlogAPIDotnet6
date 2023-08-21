@@ -1,5 +1,6 @@
 using System.Text;
 using BlogAPIDotnet6.Data;
+using BlogAPIDotnet6.Helper;
 using BlogAPIDotnet6.Repositories.Implementations;
 using BlogAPIDotnet6.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -33,8 +34,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                .GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(new TokenHelper().Key)),
             ValidateIssuer = false,
             ValidateAudience = false
         };
