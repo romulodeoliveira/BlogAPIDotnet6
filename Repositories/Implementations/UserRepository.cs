@@ -18,6 +18,11 @@ public class UserRepository : IUserRepository
         return _dataContext.Users.FirstOrDefault(x => x.Id == id);
     }
 
+    public UserModel GetUserByUsername(string username)
+    {
+        return _dataContext.Users.FirstOrDefault(u => u.Username == username);
+    }
+
     public List<UserModel> GetAllUsers()
     {
         return _dataContext.Users.ToList();
