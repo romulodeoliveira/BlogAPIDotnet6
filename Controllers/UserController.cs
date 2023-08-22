@@ -30,7 +30,8 @@ public class UserController : ControllerBase
             Username = request.Username,
             Email = request.Email,
             PasswordHash = passwordHash,
-            PasswordSalt = passwordSalt
+            PasswordSalt = passwordSalt,
+            Role = Roles.User
         };
 
         _userRepository.AddUser(user);
