@@ -15,7 +15,7 @@ public class TokenHelper
         List<Claim> claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, "Admin") // EXEMPLO DE COMO USAR ROLES!!! 
+            new Claim(ClaimTypes.Role, user.Role.ToString()) // EXEMPLO DE COMO USAR ROLES!!! 
         };
 
         var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(Key));
