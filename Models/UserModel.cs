@@ -1,8 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace BlogAPIDotnet6.Models;
 
 public class UserModel
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public string Username { get; set; }
     public string Email { get; set; }
     public byte[] PasswordHash { get; set; }
