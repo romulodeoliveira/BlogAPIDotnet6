@@ -1,3 +1,4 @@
+using BlogAPIDotnet6.Helper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +20,7 @@ public class WeatherForecastController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet(Name = "GetWeatherForecast"), Authorize(Roles = "Admin")]
+    [HttpGet(Name = "GetWeatherForecast"), Authorize(Roles = Roles.Admin)]
     public IEnumerable<WeatherForecast> Get()
     {
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
