@@ -1,7 +1,9 @@
+using System.Security.Claims;
 using BlogAPIDotnet6.DTOs;
 using BlogAPIDotnet6.Helper;
 using BlogAPIDotnet6.Models;
 using BlogAPIDotnet6.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogAPIDotnet6.Controllers;
@@ -60,5 +62,65 @@ public class UserController : ControllerBase
         string token = tokenHelper.CreateToken(user, _configuration);
 
         return Ok(token);
+    }
+    
+    [Authorize]
+    [HttpPut("update-profile")]
+    public IActionResult UpdateProfile([FromBody] UserProfileUpdateDto request)
+    {
+        try
+        {
+            var username = User.FindFirst(ClaimTypes.Name)?.Value;
+            var user = _userRepository.GetUserByUsername(username);
+            
+            if (user == null)
+            {
+                return NotFound("Usuário não encontrado.");
+            }
+
+            if (user.Username != request.Username)
+            {
+                return Forbid("Você não tem permissão para atualizar o perfil de outro usuário.");
+            }
+            
+            if (!string.IsNullOrWhiteSpace(request.Username))
+            {
+                user.Username = request.Username;
+            }
+            
+            if (!string.IsNullOrWhiteSpace(request.Email))
+            {
+                user.Email = request.Email;
+            }
+            
+            var passwordHelper = new PasswordHelper();
+            passwordHelper.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+            
+            if (!string.IsNullOrWhiteSpace(request.Password))
+            {
+                user.PasswordHash = passwordHash;
+                user.PasswordSalt = passwordSalt;
+            }
+            
+            if (!string.IsNullOrWhiteSpace(request.Firstname))
+            {
+                user.Firstname = request.Firstname;
+            }
+            
+            if (!string.IsNullOrWhiteSpace(request.Lastname))
+            {
+                user.Lastname = request.Lastname;
+            }
+            
+            user.UpdatedAt = DateTime.UtcNow;
+
+            _userRepository.UpdateUser(user);
+
+            return Ok(user);
+        }
+        catch (System.Exception error)
+        {
+            return StatusCode(500, $"Ops... Não conseguimos atualizar seu usuário. Tente novamente!\nDetalhe do erro: {error.Message}");
+        }
     }
 }
