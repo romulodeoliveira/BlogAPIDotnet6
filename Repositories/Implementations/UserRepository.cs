@@ -1,6 +1,7 @@
 using BlogAPIDotnet6.Data;
 using BlogAPIDotnet6.Models;
 using BlogAPIDotnet6.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlogAPIDotnet6.Repositories.Implementations;
 
@@ -11,11 +12,6 @@ public class UserRepository : IUserRepository
     public UserRepository(DataContext dataContext)
     {
         _dataContext = dataContext;
-    }
-    
-    public UserModel ListUserById(Guid id)
-    {
-        return _dataContext.Users.FirstOrDefault(x => x.Id == id);
     }
 
     public UserModel GetUserByUsername(string username)
@@ -37,26 +33,15 @@ public class UserRepository : IUserRepository
 
     public UserModel UpdateUser(UserModel user)
     {
-        UserModel user1 = ListUserById(user.Id);
-
-        if (user1 == null)
-        {
-            throw new System.Exception("Houve um erro ao atualizar o usuário.");
-        }
-
-        user1.Username = user.Username;
-        user1.Firstname = user.Firstname;
-        user1.Lastname = user.Lastname;
-
-        _dataContext.Users.Update(user1);
+        _dataContext.Entry(user).State = EntityState.Modified;
         _dataContext.SaveChanges();
 
-        return user1;
+        return user;
     }
 
-    public bool DeleteUser(Guid id)
+    public bool DeleteUser(string username)
     {
-        UserModel user = ListUserById(id);
+        UserModel user = GetUserByUsername(username);
 
         if (user == null)
         {
