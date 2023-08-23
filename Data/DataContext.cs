@@ -12,4 +12,14 @@ public class DataContext : DbContext
     public DbSet<CommentModel> Comments { get; set; }
     public DbSet<AddressModel> Addresses { get; set; }
     public DbSet<CategoryModel> Categories { get; set; }
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<UserModel>()
+            .HasOne(u => u.Address)
+            .WithOne(a => a.User)
+            .HasForeignKey<AddressModel>(a => a.Username);
+    }
 }
