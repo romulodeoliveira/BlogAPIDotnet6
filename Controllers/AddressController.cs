@@ -1,3 +1,4 @@
+using BlogAPIDotnet6.DTOs;
 using BlogAPIDotnet6.Models;
 using BlogAPIDotnet6.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -22,5 +23,38 @@ public class AddressController : ControllerBase
     {
         List<AddressModel> addresses = _addressRepository.GetAllAddresses();
         return Ok(addresses);
+    }
+
+    [Authorize]
+    [HttpPost("create-address")]
+    public IActionResult CreateAddress([FromBody] CreateAddressDto request)
+    {
+        try
+        {
+            var address = new AddressModel();
+
+            if (!string.IsNullOrEmpty(request.City))
+            {
+                address.City = request.City;
+            }
+            
+            if (!string.IsNullOrEmpty(request.State))
+            {
+                address.State = request.State;
+            }
+            
+            if (!string.IsNullOrEmpty(request.Country))
+            {
+                address.Country = request.Country;
+            }
+
+            _addressRepository.AddAddress(address);
+            
+            return Ok(address);
+        }
+        catch (System.Exception error)
+        {
+            return StatusCode(500, $"Ops... Não conseguimos cadastrar seu endereço. Tente novamente!\nDetalhe do erro: {error.Message}");
+        }
     }
 }
