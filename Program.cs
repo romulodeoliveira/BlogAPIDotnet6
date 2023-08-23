@@ -44,6 +44,7 @@ string dbConfig = "Server=localhost;Port=3306;Database=blogtechapi;Uid=arch;Pwd=
 builder.Services.AddDbContextPool<DataContext>(options => options.UseMySql(dbConfig, ServerVersion.AutoDetect(dbConfig)));
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 
 var app = builder.Build();
 
