@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace BlogAPIDotnet6.Models;
 
 public class AddressModel
@@ -6,6 +9,10 @@ public class AddressModel
     public string? City { get; set; }
     public string? State { get; set; }
     public string? Country { get; set; }
+    [Key, ForeignKey(nameof(User))]
+    public string Username { get; set; }
+
+    public virtual UserModel User { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 
