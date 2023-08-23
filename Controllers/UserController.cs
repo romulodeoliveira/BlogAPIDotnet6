@@ -123,4 +123,36 @@ public class UserController : ControllerBase
             return StatusCode(500, $"Ops... Não conseguimos atualizar seu usuário. Tente novamente!\nDetalhe do erro: {error.Message}");
         }
     }
+
+    [Authorize]
+    [HttpDelete("delete/{user}")]
+    public IActionResult DeleteUser(string user)
+    {
+        try
+        {
+            var username = User.FindFirst(ClaimTypes.Name)?.Value;
+            
+            if (user == username)
+            {
+                bool deleted = _userRepository.DeleteUser(user);
+                
+                if (deleted)
+                {
+                    return Ok("Usuário deletado com sucesso.");
+                }
+                else
+                {
+                    return NotFound("Usuário não encontrado.");
+                }
+            }
+            else
+            {
+                return Forbid("Você não tem permissão para deletar o perfil de outro usuário.");
+            }
+        }
+        catch (System.Exception error)
+        {
+            return StatusCode(500, $"Ops... Não conseguimos deletar seu produto. Tente novamente!\nDetalhe do erro: {error.Message}");
+        }
+    }
 }
