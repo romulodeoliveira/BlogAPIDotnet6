@@ -1,3 +1,4 @@
+using BlogAPIDotnet6.Data.Configurations;
 using BlogAPIDotnet6.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,11 +16,6 @@ public class DataContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<UserModel>()
-            .HasOne(u => u.Address)
-            .WithOne(a => a.User)
-            .HasForeignKey<AddressModel>(a => a.Username);
+        modelBuilder.ApplyConfiguration(new UserAddressConfiguration());
     }
 }
