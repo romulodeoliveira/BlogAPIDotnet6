@@ -14,9 +14,9 @@ public class UserModel
     public string? Firstname { get; set; }
     public string? Lastname { get; set; }
     public string Role { get; set; }
-    public Guid AddressId { get; set; }
+    public Guid? AddressId { get; set; }
     [ForeignKey(nameof(AddressId))]
-    public virtual AddressModel Address { get; set; }
+    public virtual AddressModel? Address { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 
