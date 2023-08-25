@@ -70,7 +70,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var username = User.FindFirst(ClaimTypes.Name)?.Value;
+            var username = User.Identity.Name;
             var user = _userRepository.GetUserByUsername(username);
             
             if (user == null)
@@ -130,7 +130,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var username = User.FindFirst(ClaimTypes.Name)?.Value;
+            var username = User.Identity.Name;
             
             if (user == username)
             {
