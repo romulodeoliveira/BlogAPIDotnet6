@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BlogAPIDotnet6.Data.Configurations;
 
-public class UserAddressConfiguration : IEntityTypeConfiguration<AddressModel>
+public class UserAddressConfiguration : IEntityTypeConfiguration<UserModel>
 {
-    public void Configure(EntityTypeBuilder<AddressModel> builder)
+    public void Configure(EntityTypeBuilder<UserModel> builder)
     {
-        // Configurações do relacionamento e mapeamento aqui
         builder
-            .HasOne(e => e.User)
-            .WithOne(e => e.Address)
-            .HasForeignKey<AddressModel>(e => e.Username)
-            .IsRequired(false);
+            .HasOne(e => e.Address)
+            .WithOne(e => e.User)
+            .HasForeignKey<UserModel>(e => e.AddressId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
