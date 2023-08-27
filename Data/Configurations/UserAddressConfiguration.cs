@@ -12,7 +12,6 @@ public class UserAddressConfiguration : IEntityTypeConfiguration<UserModel>
             .HasOne(e => e.Address)
             .WithOne(e => e.User)
             .HasForeignKey<UserModel>(e => e.AddressId)
-            .IsRequired(false)
-            .OnDelete(DeleteBehavior.Cascade);
+            .IsRequired(false);
     }
 }
