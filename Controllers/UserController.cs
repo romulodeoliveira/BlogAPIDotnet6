@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using BlogAPIDotnet6.DTOs;
 using BlogAPIDotnet6.Helper;
 using BlogAPIDotnet6.Models;
@@ -152,7 +151,7 @@ public class UserController : ControllerBase
         }
         catch (System.Exception error)
         {
-            return StatusCode(500, $"Ops... Não conseguimos deletar seu produto. Tente novamente!\nDetalhe do erro: {error.Message}");
+            return StatusCode(500, $"Ops... Não conseguimos deletar seu perfil. Tente novamente!\nDetalhe do erro: {error.Message}");
         }
     }
 }
