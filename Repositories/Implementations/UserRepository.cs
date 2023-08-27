@@ -47,6 +47,16 @@ public class UserRepository : IUserRepository
         {
             throw new System.Exception("Houve um erro ao excluir o usuário.");
         }
+        
+        if (user.AddressId != null)
+        {
+            var address = _dataContext.Addresses.FirstOrDefault(a => a.Id == user.AddressId);
+
+            if (address != null)
+            {
+                _dataContext.Addresses.Remove(address);
+            }
+        }
 
         _dataContext.Users.Remove(user);
         _dataContext.SaveChanges();
