@@ -20,6 +20,29 @@ public class UserController : ControllerBase
         _configuration = configuration;
     }
 
+    [Authorize]
+    [HttpGet("owninfo")]
+    public IActionResult GetOwnUserInformation()
+    {
+        try
+        {
+            var username = User.Identity.Name;
+            
+            var user = _userRepository.GetUserByUsername(username);
+            
+            if (user == null)
+            {
+                return NotFound("Usuário não encontrado.");
+            }
+            
+            return Ok(user);
+        }
+        catch (System.Exception error)
+        {
+            return StatusCode(500, $"Ops... Não conseguimos coletar todas as informações do seu perfil. Tente novamente!\nDetalhe do erro: {error.Message}");
+        }
+    }
+
     [HttpPost("register")]
     public async Task<IActionResult> Register(UserRegisterDto request)
     {
