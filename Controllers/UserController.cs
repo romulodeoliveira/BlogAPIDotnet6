@@ -20,6 +20,25 @@ public class UserController : ControllerBase
         _configuration = configuration;
     }
 
+    [HttpGet("list-users")]
+    public IActionResult ListAllUserInformation()
+    {
+        List<UserModel> users = _userRepository.GetAllUsers();
+        List<ViewingPublicUserInformation> sortedUsers = users
+            .OrderBy(c => c.Username)
+            .Select(c => new ViewingPublicUserInformation()
+            {
+                Username = c.Username,
+                Email = c.Email,
+                Firstname = c.Firstname,
+                Lastname = c.Lastname,
+                AddressId = c.AddressId
+            })
+            .ToList();
+
+        return Ok(sortedUsers);
+    }
+
     [Authorize]
     [HttpGet("owninfo")]
     public IActionResult GetOwnUserInformation()
