@@ -34,8 +34,20 @@ public class UserController : ControllerBase
             {
                 return NotFound("Usuário não encontrado.");
             }
+
+            var userInfo = new
+            {
+                user.Username,
+                user.Email,
+                user.Firstname,
+                user.Lastname,
+                user.Role,
+                user.AddressId,
+                user.CreatedAt,
+                user.UpdatedAt
+            };
             
-            return Ok(user);
+            return Ok(userInfo);
         }
         catch (System.Exception error)
         {
