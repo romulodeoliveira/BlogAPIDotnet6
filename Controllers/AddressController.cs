@@ -78,4 +78,52 @@ public class AddressController : ControllerBase
             return StatusCode(500, $"Ops... Não conseguimos cadastrar seu endereço. Tente novamente!\nDetalhe do erro: {error.Message}");
         }
     }
+
+    [Authorize]
+    [HttpPut("update-address")]
+    public IActionResult UpdateAddress([FromBody] CreateAddressDto request)
+    {
+        try
+        {
+            var username = User.Identity.Name;
+            var user = _userRepository.GetUserByUsername(username);
+            var address = new AddressModel();
+            var addressResponse = new UpdateAddress();
+
+            if (!string.IsNullOrEmpty(request.City))
+            {
+                address.City = request.City;
+                addressResponse.City = address.City;
+            }
+
+            if (!string.IsNullOrEmpty(request.State))
+            {
+                address.State = request.State;
+                addressResponse.State = address.State;
+            }
+
+            if (!string.IsNullOrEmpty(request.Country))
+            {
+                address.Country = request.Country;
+                addressResponse.Country = address.Country;
+            }
+
+            addressResponse.Username = username;
+            
+            if (user != null)
+            {
+                _addressRepository.UpdateAddress(address);
+
+                return Ok(addressResponse);
+            }
+            else
+            {
+                return BadRequest("Não foi possivel atualizar o endereço. Usuário não encontrado.");
+            }
+        }
+        catch (System.Exception error)
+        {
+            return StatusCode(500, $"Ops... Não conseguimos atualizar seu usuário. Tente novamente!\nDetalhe do erro: {error.Message}");
+        }
+    }
 }
