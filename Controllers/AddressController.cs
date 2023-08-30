@@ -109,6 +109,8 @@ public class AddressController : ControllerBase
                     {
                         address.Country = request.Country;
                     }
+                    
+                    address.UpdatedAt = DateTime.UtcNow;
 
                     _addressRepository.UpdateAddress(address);
 
