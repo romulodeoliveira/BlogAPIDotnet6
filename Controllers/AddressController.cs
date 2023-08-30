@@ -86,39 +86,50 @@ public class AddressController : ControllerBase
         try
         {
             var username = User.Identity.Name;
-            var user = _userRepository.GetUserByUsername(username);
-            var address = new AddressModel();
-            var addressResponse = new UpdateAddress();
-
-            if (!string.IsNullOrEmpty(request.City))
-            {
-                address.City = request.City;
-                addressResponse.City = address.City;
-            }
-
-            if (!string.IsNullOrEmpty(request.State))
-            {
-                address.State = request.State;
-                addressResponse.State = address.State;
-            }
-
-            if (!string.IsNullOrEmpty(request.Country))
-            {
-                address.Country = request.Country;
-                addressResponse.Country = address.Country;
-            }
-
-            addressResponse.Username = username;
             
+            var user = _userRepository.GetUserByUsername(username);
+
             if (user != null)
             {
-                _addressRepository.UpdateAddress(address);
+                var address = _addressRepository.GetAllAddresses().FirstOrDefault(a => a.Username == username);
 
-                return Ok(addressResponse);
+                if (address != null)
+                {
+                    if (!string.IsNullOrEmpty(request.City))
+                    {
+                        address.City = request.City;
+                    }
+
+                    if (!string.IsNullOrEmpty(request.State))
+                    {
+                        address.State = request.State;
+                    }
+
+                    if (!string.IsNullOrEmpty(request.Country))
+                    {
+                        address.Country = request.Country;
+                    }
+
+                    _addressRepository.UpdateAddress(address);
+
+                    var addressResponse = new UpdateAddress
+                    {
+                        City = address.City,
+                        State = address.State,
+                        Country = address.Country,
+                        Username = username
+                    };
+
+                    return Ok(addressResponse);
+                }
+                else
+                {
+                    return BadRequest("Não foi possível atualizar o endereço. Endereço não encontrado.");
+                }
             }
             else
             {
-                return BadRequest("Não foi possivel atualizar o endereço. Usuário não encontrado.");
+                return BadRequest("Não foi possível atualizar o endereço. Usuário não encontrado.");
             }
         }
         catch (System.Exception error)
