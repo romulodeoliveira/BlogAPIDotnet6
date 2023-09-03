@@ -77,6 +77,13 @@ public class UserController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(UserRegisterDto request)
     {
+        var existingUser = _userRepository.GetUserByUsername(request.Username);
+
+        if (existingUser != null)
+        {
+            return BadRequest("Nome de usuário já está em uso.");
+        }
+
         var passwordHelper = new PasswordHelper();
         passwordHelper.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
