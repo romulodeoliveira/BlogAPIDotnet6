@@ -91,7 +91,7 @@ public class UserController : ControllerBase
 
         _userRepository.AddUser(user);
 
-        return Ok(user);
+        return Ok("Usuário criado com sucesso.");
     }
     
     [HttpPost("login")]
@@ -135,12 +135,7 @@ public class UserController : ControllerBase
             {
                 return Forbid("Você não tem permissão para atualizar o perfil de outro usuário.");
             }
-            
-            if (!string.IsNullOrWhiteSpace(request.Username))
-            {
-                user.Username = request.Username;
-            }
-            
+
             if (!string.IsNullOrWhiteSpace(request.Email))
             {
                 user.Email = request.Email;
@@ -169,7 +164,7 @@ public class UserController : ControllerBase
 
             _userRepository.UpdateUser(user);
 
-            return Ok(user);
+            return Ok("Usuário atualizado com sucesso.");
         }
         catch (System.Exception error)
         {
