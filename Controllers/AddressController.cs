@@ -136,7 +136,41 @@ public class AddressController : ControllerBase
         }
         catch (System.Exception error)
         {
-            return StatusCode(500, $"Ops... Não conseguimos atualizar seu usuário. Tente novamente!\nDetalhe do erro: {error.Message}");
+            return StatusCode(500, $"Ops... Não conseguimos atualizar seu endereço. Tente novamente!\nDetalhe do erro: {error.Message}");
+        }
+    }
+
+    [Authorize]
+    [HttpDelete("delete")]
+    public IActionResult DeleteUser()
+    {
+        try
+        {
+            var username = User.Identity.Name;
+            
+            var user = _userRepository.GetUserByUsername(username);
+
+            if (user.AddressId != null)
+            {
+                bool deleted = _addressRepository.DeleteAddress(user.AddressId.Value);
+
+                if (deleted)
+                {
+                    return Ok("Endereço deletado com sucesso.");
+                }
+                else
+                {
+                    return NotFound("Endereço não encontrado.");
+                } 
+            }
+            else
+            {
+                return BadRequest("Não foi possível deletar o endereço. Nenhum endereço encontrado.");
+            }
+        }
+        catch (System.Exception error)
+        {
+            return StatusCode(500, $"Ops... Não conseguimos deleter seu endereço. Tente novamente!\nDetalhe do erro: {error.Message}");
         }
     }
 }
