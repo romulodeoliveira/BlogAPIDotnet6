@@ -1,3 +1,5 @@
+using BlogAPIDotnet6.DTOs;
+using BlogAPIDotnet6.Models;
 using BlogAPIDotnet6.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,6 +30,40 @@ public class PostController : ControllerBase
         catch (Exception error)
         {
             return StatusCode(500, $"Erro interno do servidor: {error.Message}");
+        }
+    }
+
+    [HttpPost("create-post")]
+    public IActionResult CreatePost([FromBody] PostDto request)
+    {
+        try
+        {
+            var post = new PostModel();
+            
+            if (!string.IsNullOrEmpty(request.Title))
+            {
+                post.Title = request.Title;
+            }
+            else
+            {
+                return BadRequest("O título da publicação não pode estar em branco.");
+            }
+
+            if (!string.IsNullOrEmpty(request.Body))
+            {
+                post.Body = request.Body;
+            }
+            else
+            {
+                return BadRequest("O corpo da publicação não pode estar em branco.");
+            }
+
+            _postRepository.AddPost(post);
+            return Ok(post);
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, $"Não conseguimos publicar sua postagem.\nDetalhe do erro: {error.Message}");
         }
     }
 }
