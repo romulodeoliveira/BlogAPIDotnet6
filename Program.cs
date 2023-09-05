@@ -50,6 +50,7 @@ builder.Services.AddDbContextPool<DataContext>(options => options.UseMySql(dbCon
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
 
 var app = builder.Build();
 
