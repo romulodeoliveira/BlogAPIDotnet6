@@ -66,4 +66,32 @@ public class PostController : ControllerBase
             return StatusCode(500, $"Não conseguimos publicar sua postagem.\nDetalhe do erro: {error.Message}");
         }
     }
+
+    [HttpPut("update-post")]
+    public IActionResult UpdatePost(Guid id, [FromBody] PostDto request)
+    {
+        try
+        {
+            var post = _postRepository.GetPostById(id);
+            
+            if (!string.IsNullOrEmpty(request.Title))
+            {
+                post.Title = request.Title;
+            }
+
+            if (!string.IsNullOrEmpty(request.Body))
+            {
+                post.Body = request.Body;
+            }
+
+            post.UpdatedAt = DateTime.UtcNow;
+
+            _postRepository.UpdatePost(post);
+            return Ok(post);
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, $"Não conseguimos atualizar sua postagem.\nDetalhe do erro: {error.Message}");
+        }
+    }
 }
