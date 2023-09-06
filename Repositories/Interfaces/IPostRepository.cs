@@ -8,5 +8,5 @@ public interface IPostRepository
     List<PostModel> GetAllPosts();
     PostModel AddPost(PostModel post);
     PostModel UpdatePost(PostModel post);
-    bool DeleteAddress(Guid id);
+    bool DeletePost(Guid id);
 }
