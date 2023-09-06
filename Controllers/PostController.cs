@@ -94,4 +94,26 @@ public class PostController : ControllerBase
             return StatusCode(500, $"Não conseguimos atualizar sua postagem.\nDetalhe do erro: {error.Message}");
         }
     }
+    
+    [HttpDelete("delete-post")]
+    public IActionResult DeletePost(Guid id)
+    {
+        try
+        {
+            bool deleted = _postRepository.DeletePost(id);
+                
+            if (deleted)
+            {
+                return Ok("Publicação deletada com sucesso.");
+            }
+            else
+            {
+                return NotFound("Publicação não encontrado.");
+            }
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, $"Não conseguimos apagar sua postagem.\nDetalhe do erro: {error.Message}");
+        }
+    }
 }
