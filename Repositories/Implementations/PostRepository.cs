@@ -41,7 +41,7 @@ public class PostRepository : IPostRepository
         return post;
     }
 
-    public bool DeleteAddress(Guid id)
+    public bool DeletePost(Guid id)
     {
         if (id == Guid.Empty)
         {
