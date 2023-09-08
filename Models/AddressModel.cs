@@ -9,8 +9,8 @@ public class AddressModel
     public string? City { get; set; }
     public string? State { get; set; }
     public string? Country { get; set; }
-    [ForeignKey(nameof(User))]
     public string Username { get; set; }
+    [ForeignKey(nameof(Username))]
     public virtual UserModel User { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
