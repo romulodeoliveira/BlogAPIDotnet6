@@ -1,6 +1,8 @@
 using BlogAPIDotnet6.DTOs;
+using BlogAPIDotnet6.Helper;
 using BlogAPIDotnet6.Models;
 using BlogAPIDotnet6.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogAPIDotnet6.Controllers;
@@ -10,10 +12,12 @@ namespace BlogAPIDotnet6.Controllers;
 public class PostController : ControllerBase
 {
     private readonly IPostRepository _postRepository;
+    private readonly IUserRepository _userRepository;
 
-    public PostController(IPostRepository postRepository)
+    public PostController(IPostRepository postRepository, IUserRepository userRepository)
     {
         _postRepository = postRepository;
+        _userRepository = userRepository;
     }
 
     [HttpGet("list-posts")]
@@ -33,8 +37,9 @@ public class PostController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("create-post")]
-    public IActionResult CreatePost([FromBody] PostDto request)
+    public IActionResult CreatePost(bool isPublished, [FromBody] PostDto request)
     {
         try
         {
@@ -43,6 +48,8 @@ public class PostController : ControllerBase
             if (!string.IsNullOrEmpty(request.Title))
             {
                 post.Title = request.Title;
+
+                post.Slug = SlugHelper.GenerateSlug(request.Title);
             }
             else
             {
@@ -57,9 +64,27 @@ public class PostController : ControllerBase
             {
                 return BadRequest("O corpo da publicação não pode estar em branco.");
             }
+            
+            post.IsPublished = isPublished;
 
-            _postRepository.AddPost(post);
-            return Ok(post);
+            var username = User.Identity.Name;
+
+            var user = _userRepository.GetUserByUsername(username);
+            if (user != null)
+            {
+                post.Username = username;
+                post.User = user;
+                _postRepository.AddPost(post);
+                
+                user.Posts.Add(post);
+                _userRepository.UpdateUser(user);
+
+                return Ok(post);
+            }
+            else
+            {
+                return BadRequest("Usuário não encontrado.");
+            }
         }
         catch (Exception error)
         {
