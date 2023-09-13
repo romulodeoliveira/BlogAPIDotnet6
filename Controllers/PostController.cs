@@ -49,7 +49,16 @@ public class PostController : ControllerBase
             {
                 post.Title = request.Title;
 
-                post.Slug = SlugHelper.GenerateSlug(request.Title);
+                string slug = SlugHelper.GenerateSlug(request.Title);
+                
+                if (!_postRepository.IsSlugUnique(slug))
+                {
+                    return BadRequest("Slug já existe. Escolha um título diferente.");
+                }
+                else
+                {
+                    post.Slug = slug;
+                }
             }
             else
             {
