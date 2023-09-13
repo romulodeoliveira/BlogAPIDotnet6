@@ -32,6 +32,11 @@ public class PostRepository : IPostRepository
 
         return post;
     }
+    
+    public bool IsSlugUnique(string slug)
+    {
+        return !_dataContext.Posts.Any(p => p.Slug == slug);
+    }
 
     public PostModel UpdatePost(PostModel post)
     {
