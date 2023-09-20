@@ -101,6 +101,7 @@ public class PostController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPut("update-post")]
     public IActionResult UpdatePost(Guid id, [FromBody] PostDto request)
     {
@@ -111,6 +112,17 @@ public class PostController : ControllerBase
             if (!string.IsNullOrEmpty(request.Title))
             {
                 post.Title = request.Title;
+                
+                string slug = SlugHelper.GenerateSlug(request.Title);
+                
+                if (!_postRepository.IsSlugUnique(slug))
+                {
+                    return BadRequest("Slug já existe. Escolha um título diferente.");
+                }
+                else
+                {
+                    post.Slug = slug;
+                }
             }
 
             if (!string.IsNullOrEmpty(request.Body))
