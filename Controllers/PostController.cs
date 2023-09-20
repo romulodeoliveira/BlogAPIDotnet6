@@ -141,6 +141,7 @@ public class PostController : ControllerBase
         }
     }
     
+    [Authorize]
     [HttpDelete("delete-post")]
     public IActionResult DeletePost(Guid id)
     {
