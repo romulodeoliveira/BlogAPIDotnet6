@@ -118,11 +118,6 @@ public class UserController : ControllerBase
         }
 
         var passwordHelper = new PasswordHelper();
-        
-        if (!passwordHelper.CheckerStrongPassword(request.Password))
-        {
-            return BadRequest("Senha não aceita. Insira uma senha de 6 a 12 caracteres e que tenha pelo menos uma letra maiuscula, uma minuscula, um numero e um caractere especial.");
-        }
 
         if (!passwordHelper.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
         {
