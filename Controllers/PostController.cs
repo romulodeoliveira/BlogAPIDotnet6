@@ -37,7 +37,7 @@ public class PostController : ControllerBase
         }
     }
 
-    [Authorize]
+    [Authorize(Roles = Roles.Admin)]
     [HttpPost("create-post")]
     public IActionResult CreatePost(bool isPublished, [FromBody] PostDto request)
     {
@@ -101,7 +101,7 @@ public class PostController : ControllerBase
         }
     }
 
-    [Authorize]
+    [Authorize(Roles = Roles.Admin)]
     [HttpPut("update-post")]
     public IActionResult UpdatePost(Guid id, [FromBody] PostDto request)
     {
@@ -141,7 +141,7 @@ public class PostController : ControllerBase
         }
     }
     
-    [Authorize]
+    [Authorize(Roles = Roles.Admin)]
     [HttpDelete("delete-post")]
     public IActionResult DeletePost(Guid id)
     {
