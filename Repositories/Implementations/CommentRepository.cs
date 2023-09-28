@@ -18,9 +18,13 @@ public class CommentRepository : ICommentRepository
         throw new NotImplementedException();
     }
 
-    public List<CommentModel> GetAllComments()
+    public List<CommentModel> GetAllCommentsForPublication(Guid id)
     {
-        throw new NotImplementedException();
+        var comments = _dataContext.Comments
+            .Where(c => c.PostId == id.ToString())
+            .ToList();
+
+        return comments;
     }
 
     public CommentModel AddAddress(CommentModel comment)
