@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace BlogAPIDotnet6.Models;
 
 public class CommentModel
@@ -7,6 +9,9 @@ public class CommentModel
     public string Body { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+    public string PostId { get; set; }
+    [ForeignKey(nameof(PostId))]
+    public virtual PostModel Post { get; set; }
 
     public CommentModel()
     {

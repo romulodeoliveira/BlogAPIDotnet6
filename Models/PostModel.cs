@@ -13,6 +13,7 @@ public class PostModel
     public string Username { get; set; }
     [ForeignKey(nameof(Username))]
     public virtual UserModel User { get; set; }
+    public ICollection<CommentModel> Comments { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 
