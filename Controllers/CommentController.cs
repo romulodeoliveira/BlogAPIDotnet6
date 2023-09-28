@@ -20,7 +20,7 @@ public class CommentController : ControllerBase
     }
 
     [HttpGet("list-comments")]
-    public IActionResult ListComments(Guid id) // ID da Publicação
+    public IActionResult ListCommentsByPost(Guid id) // ID da Publicação
     {
         try
         {
