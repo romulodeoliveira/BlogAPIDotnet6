@@ -5,7 +5,7 @@ namespace BlogAPIDotnet6.Repositories.Interfaces;
 public interface ICommentRepository
 {
     CommentModel GetCommentById(Guid id);
-    List<CommentModel> GetAllComments();
+    List<CommentModel> GetAllCommentsForPublication(Guid id);
     CommentModel AddAddress(CommentModel comment);
     CommentModel UpdateComment(CommentModel comment);
     bool DeleteComment(Guid id);
