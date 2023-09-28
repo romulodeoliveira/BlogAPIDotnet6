@@ -27,9 +27,12 @@ public class CommentRepository : ICommentRepository
         return comments;
     }
 
-    public CommentModel AddAddress(CommentModel comment)
+    public CommentModel AddComment(CommentModel comment)
     {
-        throw new NotImplementedException();
+        _dataContext.Comments.Add(comment);
+        _dataContext.SaveChanges();
+
+        return comment;
     }
 
     public CommentModel UpdateComment(CommentModel comment)
