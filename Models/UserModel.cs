@@ -17,7 +17,8 @@ public class UserModel
     public Guid? AddressId { get; set; }
     [ForeignKey(nameof(AddressId))]
     public virtual AddressModel? Address { get; set; }
-    public ICollection<PostModel> Posts { get; set; }
+    public ICollection<PostModel>? Posts { get; set; }
+    public ICollection<CommentModel>? Comments { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 

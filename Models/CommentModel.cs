@@ -9,6 +9,9 @@ public class CommentModel
     public string Body { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+    public string Username { get; set; }
+    [ForeignKey(nameof(Username))]
+    public virtual UserModel User { get; set; }
     public string PostId { get; set; }
     [ForeignKey(nameof(PostId))]
     public virtual PostModel Post { get; set; }
