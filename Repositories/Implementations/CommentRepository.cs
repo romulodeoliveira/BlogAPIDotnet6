@@ -21,7 +21,7 @@ public class CommentRepository : ICommentRepository
     public List<CommentModel> GetAllCommentsForPublication(Guid id)
     {
         var comments = _dataContext.Comments
-            .Where(c => c.PostId == id.ToString())
+            .Where(c => c.PostId == id)
             .ToList();
 
         return comments;
