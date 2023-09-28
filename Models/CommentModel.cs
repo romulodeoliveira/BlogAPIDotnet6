@@ -12,7 +12,7 @@ public class CommentModel
     public string Username { get; set; }
     [ForeignKey(nameof(Username))]
     public virtual UserModel User { get; set; }
-    public string PostId { get; set; }
+    public Guid PostId { get; set; }
     [ForeignKey(nameof(PostId))]
     public virtual PostModel Post { get; set; }
 
