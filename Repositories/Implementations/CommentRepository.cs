@@ -27,6 +27,15 @@ public class CommentRepository : ICommentRepository
         return comments;
     }
 
+    // GetAllCommentsForUser
+    public List<CommentModel> GetAllCommentsForUser(string username)
+    {
+        var comments = _dataContext.Comments
+            .Where((c => c.Username == username))
+            .ToList();
+        
+        return comments;
+    }
     public CommentModel AddComment(CommentModel comment)
     {
         _dataContext.Comments.Add(comment);
