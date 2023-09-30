@@ -41,6 +41,33 @@ public class CommentController : ControllerBase
     }
 
     [Authorize]
+    [HttpGet("list-comments-by-user")]
+    public IActionResult ListCommentsByUser()
+    {
+        try
+        {
+            var user = User.Identity.Name;
+
+            var comments = _commentRepository.GetAllCommentsForUser(user)
+                .OrderByDescending(p => p.CreatedAt)
+                .ToList();
+
+            if (user != null)
+            {
+                return Ok(comments);
+            }
+            else
+            {
+                return BadRequest("Usuário não encontrado.");
+            }
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, $"Erro interno: {error.Message}");
+        }
+    }
+
+    [Authorize]
     [HttpPost("create-comment")]
     public IActionResult CreatePost(Guid id, [FromBody] CreateCommentDto request)
     {
