@@ -125,4 +125,46 @@ public class CommentController : ControllerBase
             return StatusCode(500, $"Erro interno: {error.Message}");
         }
     }
+
+    [Authorize]
+    [HttpPut("update-comment/{postId}/{commentId}")]
+    public IActionResult UpdateComment([FromRoute] Guid postId, [FromRoute] Guid commentId, [FromBody] UpdateCommentDto request)
+    {
+        try
+        {
+            var user = User.Identity.Name;
+            var comment = _commentRepository.GetCommentById(commentId);
+            var post = _postRepository.GetPostById(postId);
+
+            if (comment == null)
+            {
+                return NotFound("Comentário não encontrado.");
+            }
+
+            if (post == null)
+            {
+                return NotFound("Post não encontrado.");
+            }
+            
+            if (user != comment.Username)
+            {
+                return Unauthorized("Você não tem permissão para atualizar este comentário.");
+            }
+        
+            if (!string.IsNullOrEmpty(request.Body))
+            {
+                comment.Body = request.Body;
+            }
+            
+            comment.UpdatedAt = DateTime.UtcNow;
+
+            _commentRepository.UpdateComment(comment);
+            
+            return Ok(comment);
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, $"Erro interno: {error.Message}");
+        }
+    }
 }
