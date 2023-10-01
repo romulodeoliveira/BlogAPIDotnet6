@@ -1,6 +1,6 @@
-namespace BlogAPIDotnet6.DTOs;
+namespace BlogAPIDotnet6.DTOs.User;
 
-public class ViewingPublicUserInformation
+public class PublicInfo
 {
     public string Username { get; set; }
     public string Email { get; set; }

@@ -1,6 +1,6 @@
-namespace BlogAPIDotnet6.DTOs;
+namespace BlogAPIDotnet6.DTOs.User;
 
-public class UserRegisterDto
+public class Register
 {
     public string Username { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
