@@ -1,6 +1,7 @@
 using BlogAPIDotnet6.Data;
 using BlogAPIDotnet6.Models;
 using BlogAPIDotnet6.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlogAPIDotnet6.Repositories.Implementations;
 
@@ -15,7 +16,7 @@ public class CommentRepository : ICommentRepository
     
     public CommentModel GetCommentById(Guid id)
     {
-        throw new NotImplementedException();
+        return _dataContext.Comments.FirstOrDefault(c => c.Id == id);
     }
 
     public List<CommentModel> GetAllCommentsForPublication(Guid id)
@@ -46,7 +47,10 @@ public class CommentRepository : ICommentRepository
 
     public CommentModel UpdateComment(CommentModel comment)
     {
-        throw new NotImplementedException();
+        _dataContext.Entry(comment).State = EntityState.Modified;
+        _dataContext.SaveChanges();
+
+        return comment;
     }
 
     public bool DeleteComment(Guid id)
