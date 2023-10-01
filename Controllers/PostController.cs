@@ -12,12 +12,10 @@ namespace BlogAPIDotnet6.Controllers;
 public class PostController : ControllerBase
 {
     private readonly IPostRepository _postRepository;
-    private readonly IUserRepository _userRepository;
 
-    public PostController(IPostRepository postRepository, IUserRepository userRepository)
+    public PostController(IPostRepository postRepository)
     {
         _postRepository = postRepository;
-        _userRepository = userRepository;
     }
 
     [HttpGet("list-posts")]
@@ -77,23 +75,11 @@ public class PostController : ControllerBase
             post.IsPublished = isPublished;
 
             var username = User.Identity.Name;
+            post.Username = username;
+            
+            _postRepository.AddPost(post);
 
-            var user = _userRepository.GetUserByUsername(username);
-            if (user != null)
-            {
-                post.Username = username;
-                post.User = user;
-                _postRepository.AddPost(post);
-                
-                user.Posts.Add(post);
-                _userRepository.UpdateUser(user);
-
-                return Ok(post);
-            }
-            else
-            {
-                return BadRequest("Usuário não encontrado.");
-            }
+            return Ok(post);
         }
         catch (Exception error)
         {
