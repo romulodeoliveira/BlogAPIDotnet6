@@ -1,4 +1,4 @@
-using BlogAPIDotnet6.DTOs;
+using BlogAPIDotnet6.DTOs.User;
 using BlogAPIDotnet6.Helper;
 using BlogAPIDotnet6.Models;
 using BlogAPIDotnet6.Repositories.Interfaces;
@@ -24,9 +24,9 @@ public class UserController : ControllerBase
     public IActionResult ListAllUserInformation()
     {
         List<UserModel> users = _userRepository.GetAllUsers();
-        List<ViewingPublicUserInformation> sortedUsers = users
+        List<PublicInfo> sortedUsers = users
             .OrderBy(c => c.Username)
-            .Select(c => new ViewingPublicUserInformation()
+            .Select(c => new PublicInfo()
             {
                 Username = c.Username,
                 Email = c.Email,
@@ -75,7 +75,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(UserRegisterDto request)
+    public async Task<IActionResult> Register(Register request)
     {
         var existingUser = _userRepository.GetUserByUsername(request.Username);
 
@@ -108,7 +108,7 @@ public class UserController : ControllerBase
     }
     
     [HttpPost("login")]
-    public async Task<ActionResult<string>> Login(UserLoginDto request)
+    public async Task<ActionResult<string>> Login(Login request)
     {
         var user = _userRepository.GetUserByUsername(request.Username);
         
@@ -132,7 +132,7 @@ public class UserController : ControllerBase
     
     [Authorize]
     [HttpPut("update-profile")]
-    public IActionResult UpdateProfile([FromBody] UserProfileUpdateDto request)
+    public IActionResult UpdateProfile([FromBody] Update request)
     {
         try
         {
