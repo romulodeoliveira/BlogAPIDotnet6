@@ -167,4 +167,39 @@ public class CommentController : ControllerBase
             return StatusCode(500, $"Erro interno: {error.Message}");
         }
     }
+
+    [Authorize]
+    [HttpDelete("delete-comment/{postId}/{commentId}")]
+    public IActionResult DeleteComment([FromRoute] Guid postId, [FromRoute] Guid commentId)
+    {
+        try
+        {
+            var user = User.Identity.Name;
+            var comment = _commentRepository.GetCommentById(commentId);
+            var post = _postRepository.GetPostById(postId);
+
+            if (comment == null)
+            {
+                return NotFound("Comentário não encontrado.");
+            }
+
+            if (post == null)
+            {
+                return NotFound("Post não encontrado.");
+            }
+            
+            if (user != comment.Username)
+            {
+                return Unauthorized("Você não tem permissão para deletar este comentário.");
+            }
+            
+            bool deleted = _commentRepository.DeleteComment(commentId);
+            
+            return Ok("Comentário deletada com sucesso.");
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, $"Erro interno: {error.Message}");
+        }
+    }
 }
