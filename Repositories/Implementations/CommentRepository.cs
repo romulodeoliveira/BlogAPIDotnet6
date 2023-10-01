@@ -55,6 +55,21 @@ public class CommentRepository : ICommentRepository
 
     public bool DeleteComment(Guid id)
     {
-        throw new NotImplementedException();
+        if (id == Guid.Empty)
+        {
+            throw new ArgumentException($"O ID fornecido não é válido. {nameof(id)}");
+        }
+
+        CommentModel comment = GetCommentById(id);
+        
+        if (comment == null)
+        {
+            throw new System.Exception("Houve um erro ao excluir o comentário.");
+        }
+
+        _dataContext.Comments.Remove(comment);
+        _dataContext.SaveChanges();
+
+        return true;
     }
 }
