@@ -17,5 +17,6 @@ public class DataContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new UserAddressConfiguration());
+        modelBuilder.ApplyConfiguration(new UserPostConfiguration());
     }
 }
