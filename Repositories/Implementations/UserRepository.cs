@@ -57,16 +57,6 @@ public class UserRepository : IUserRepository
                 _dataContext.Addresses.Remove(address);
             }
         }
-        
-        if (user.Posts != null && user.Posts.Any())
-        {
-            foreach (var post in user.Posts.ToList())
-            {
-                user.Posts.Remove(post);
-
-                _dataContext.Posts.Remove(post);
-            }
-        }
 
         _dataContext.Users.Remove(user);
         _dataContext.SaveChanges();
