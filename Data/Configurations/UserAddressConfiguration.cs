@@ -9,9 +9,9 @@ public class UserAddressConfiguration : IEntityTypeConfiguration<UserModel>
     public void Configure(EntityTypeBuilder<UserModel> builder)
     {
         builder
-            .HasOne(e => e.Address)
-            .WithOne(e => e.User)
-            .HasForeignKey<UserModel>(e => e.AddressId)
+            .HasOne(u => u.Address)
+            .WithOne(a => a.User)
+            .HasForeignKey<UserModel>(a => a.AddressId) // Chave estrangeira para AddressModel
             .IsRequired(false);
     }
 }
