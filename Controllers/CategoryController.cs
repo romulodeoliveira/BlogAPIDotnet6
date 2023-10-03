@@ -9,15 +9,10 @@ namespace BlogAPIDotnet6.Controllers;
 public class CategoryController : ControllerBase
 {
     private readonly ICategoryRepository _categoryRepository;
-    private readonly IPostRepository _postRepository;
-    private readonly IUserRepository _userRepository;
 
-    public CategoryController(ICategoryRepository categoryRepository, IPostRepository postRepository,
-        IUserRepository userRepository)
+    public CategoryController(ICategoryRepository categoryRepository)
     {
         _categoryRepository = categoryRepository;
-        _postRepository = postRepository;
-        _userRepository = userRepository;
     }
 
     [HttpGet("list-categories")]
