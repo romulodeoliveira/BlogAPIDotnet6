@@ -1,5 +1,7 @@
+using BlogAPIDotnet6.DTOs.Category;
 using BlogAPIDotnet6.Models;
 using BlogAPIDotnet6.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogAPIDotnet6.Controllers;
@@ -20,5 +22,35 @@ public class CategoryController : ControllerBase
     {
         List<CategoryModel> categories = _categoryRepository.GetAllCategories();
         return Ok(categories);
+    }
+    
+    [Authorize]
+    [HttpPost("create-category")]
+    public IActionResult CreateCategory([FromBody] CreateCategory request)
+    {
+        try
+        {
+            var category = new CategoryModel();
+
+            if (!string.IsNullOrEmpty(request.Title))
+            {
+                category.Title = request.Title;
+            }
+            else
+            {
+                return BadRequest("O título da categoria não pode estar em branco.");
+            }
+
+            var username = User.Identity.Name;
+            category.Username = username;
+
+            _categoryRepository.AddCategory(category);
+            
+            return Ok(category);
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, $"Erro interno: {error.Message}");
+        }
     }
 }
