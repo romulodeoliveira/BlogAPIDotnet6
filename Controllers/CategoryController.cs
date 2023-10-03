@@ -19,4 +19,11 @@ public class CategoryController : ControllerBase
         _postRepository = postRepository;
         _userRepository = userRepository;
     }
+
+    [HttpGet("list-categories")]
+    public IActionResult ListCategories()
+    {
+        List<CategoryModel> categories = _categoryRepository.GetAllCategories();
+        return Ok(categories);
+    }
 }
