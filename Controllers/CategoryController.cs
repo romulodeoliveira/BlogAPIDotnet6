@@ -53,4 +53,27 @@ public class CategoryController : ControllerBase
             return StatusCode(500, $"Erro interno: {error.Message}");
         }
     }
+
+    [Authorize]
+    [HttpPut]
+    public IActionResult UpdateCategory(Guid categoryId, [FromBody] UpdateCategory request)
+    {
+        try
+        {
+            var category = _categoryRepository.GetCategoryById(categoryId);
+
+            if (!string.IsNullOrEmpty(request.Title))
+            {
+                category.Title = request.Title;
+            }
+
+            _categoryRepository.UpdateCategory(category);
+            
+            return Ok();
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, $"Erro interno: {error.Message}");
+        }
+    }
 }
