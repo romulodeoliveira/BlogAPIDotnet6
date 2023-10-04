@@ -76,4 +76,27 @@ public class CategoryController : ControllerBase
             return StatusCode(500, $"Erro interno: {error.Message}");
         }
     }
+    
+    [Authorize]
+    [HttpDelete("delete-category")]
+    public IActionResult DeleteCategory(Guid categoryId)
+    {
+        try
+        {
+            bool deleted = _categoryRepository.DeleteCategory(categoryId);
+
+            if (deleted)
+            {
+                return Ok("Categoria deletada com sucesso.");
+            }
+            else
+            {
+                return NotFound("Categoria não encontrada.");
+            }
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, $"Erro interno: {error.Message}");
+        }
+    }
 }
