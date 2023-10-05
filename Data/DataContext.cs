@@ -18,7 +18,10 @@ public class DataContext : DbContext
     {
         modelBuilder.ApplyConfiguration(new UserAddressConfiguration());
         modelBuilder.ApplyConfiguration(new UserPostConfiguration());
+        modelBuilder.ApplyConfiguration(new UserCommentConfiguration());
         modelBuilder.ApplyConfiguration(new UserCategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new PostCommentConfiguration());
+        modelBuilder.ApplyConfiguration(new CategoryPostConfiguration());
             
         base.OnModelCreating(modelBuilder);
     }
