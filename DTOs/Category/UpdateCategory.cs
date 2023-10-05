@@ -1,3 +1,6 @@
 namespace BlogAPIDotnet6.DTOs.Category;
 
-public record UpdateCategory(string Title);
+public class UpdateCategory
+{
+    private string Title { get; set; }
+};

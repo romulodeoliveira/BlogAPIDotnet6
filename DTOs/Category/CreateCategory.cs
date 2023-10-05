@@ -1,3 +1,6 @@
 namespace BlogAPIDotnet6.DTOs.Category;
 
-public record CreateCategory(string Title);
+public class CreateCategory
+{
+    private string Title { get; set; }
+};

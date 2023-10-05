@@ -2,6 +2,7 @@ namespace BlogAPIDotnet6.DTOs;
 
 public class PostDto
 {
-    public string Title { get; set; }
-    public string Body { get; set; }
+    private string Title { get; set; }
+    private string Body { get; set; }
+    private Guid? CategoryId { get; set; }
 }
