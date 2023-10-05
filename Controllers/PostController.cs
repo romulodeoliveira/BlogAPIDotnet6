@@ -17,9 +17,67 @@ public class PostController : ControllerBase
     {
         _postRepository = postRepository;
     }
+    
+    [HttpGet("list-published-posts")]
+    public IActionResult ListPublishedPosts()
+    {
+        try
+        {
+            var posts = _postRepository.GetAllPosts()
+                .Where(p => p.IsPublished)
+                .OrderByDescending(p => p.CreatedAt)
+                .Select(post => new
+                {
+                    post.Slug,
+                    post.Title,
+                    post.Username,
+                    post.IsPublished,
+                    post.Comments,
+                    post.CreatedAt,
+                    post.UpdatedAt
+                })
+                .ToList();
 
-    [HttpGet("list-posts")]
-    public IActionResult ListPosts()
+            return Ok(posts);
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, $"Erro interno do servidor: {error.Message}");
+        }
+    }
+    
+    [Authorize(Roles = Roles.Admin)]
+    [HttpGet("list-unpublished-posts")]
+    public IActionResult ListUnpublishedPosts()
+    {
+        try
+        {
+            var posts = _postRepository.GetAllPosts()
+                .Where(p => !p.IsPublished)
+                .OrderByDescending(p => p.CreatedAt)
+                .Select(post => new
+                {
+                    post.Slug,
+                    post.Title,
+                    post.Username,
+                    post.IsPublished,
+                    post.Comments,
+                    post.CreatedAt,
+                    post.UpdatedAt
+                })
+                .ToList();
+
+            return Ok(posts);
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, $"Erro interno do servidor: {error.Message}");
+        }
+    }
+
+    [Authorize(Roles = Roles.Admin)]
+    [HttpGet("list-all-posts")]
+    public IActionResult ListAllPosts()
     {
         try
         {
