@@ -25,6 +25,16 @@ public class PostController : ControllerBase
         {
             var posts = _postRepository.GetAllPosts()
                 .OrderByDescending(p => p.CreatedAt)
+                .Select(post => new
+                {
+                    post.Slug,
+                    post.Title,
+                    post.Username,
+                    post.IsPublished,
+                    post.Comments,
+                    post.CreatedAt,
+                    post.UpdatedAt
+                })
                 .ToList();
 
             return Ok(posts);
@@ -71,6 +81,11 @@ public class PostController : ControllerBase
             {
                 return BadRequest("O corpo da publicação não pode estar em branco.");
             }
+
+            if (request.CategoryId != null)
+            {
+                post.CategoryId = request.CategoryId;
+            }
             
             post.IsPublished = isPublished;
 
@@ -79,7 +94,17 @@ public class PostController : ControllerBase
             
             _postRepository.AddPost(post);
 
-            return Ok(post);
+            var info = new
+            {
+                post.Slug,
+                post.Title,
+                post.Username,
+                post.IsPublished,
+                post.Comments,
+                post.CreatedAt,
+                post.UpdatedAt
+            };
+            return Ok(info);
         }
         catch (Exception error)
         {
@@ -115,11 +140,27 @@ public class PostController : ControllerBase
             {
                 post.Body = request.Body;
             }
+            
+            if (request.CategoryId != null)
+            {
+                post.CategoryId = request.CategoryId;
+            }
 
             post.UpdatedAt = DateTime.UtcNow;
 
             _postRepository.UpdatePost(post);
-            return Ok(post);
+            
+            var info = new
+            {
+                post.Slug,
+                post.Title,
+                post.Username,
+                post.IsPublished,
+                post.Comments,
+                post.CreatedAt,
+                post.UpdatedAt
+            };
+            return Ok(info);
         }
         catch (Exception error)
         {
