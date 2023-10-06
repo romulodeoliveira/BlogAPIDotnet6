@@ -26,7 +26,16 @@ public class AddressController : ControllerBase
     [HttpGet("list-address")]
     public IActionResult ListAddress()
     {
-        List<AddressModel> addresses = _addressRepository.GetAllAddresses();
+        var addresses = _addressRepository.GetAllAddresses()
+            .Select(a => new {
+                a.Id,
+                a.Country,
+                a.State,
+                a.City,
+                a.Username,
+                a.CreatedAt,
+                a.UpdatedAt
+            });
         return Ok(addresses);
     }
 
@@ -66,7 +75,17 @@ public class AddressController : ControllerBase
                 user.Address = address;
                 _userRepository.UpdateUser(user);
 
-                return Ok(address);
+                var info = new {
+                    address.Id,
+                    address.Country,
+                    address.State,
+                    address.City,
+                    address.Username,
+                    address.CreatedAt,
+                    address.UpdatedAt
+                };
+                
+                return Ok(info);
             }
             else
             {
@@ -114,15 +133,17 @@ public class AddressController : ControllerBase
 
                     _addressRepository.UpdateAddress(address);
 
-                    var addressResponse = new UpdateAddress
-                    {
-                        City = address.City,
-                        State = address.State,
-                        Country = address.Country,
-                        Username = username
+                    var info = new {
+                        address.Id,
+                        address.Country,
+                        address.State,
+                        address.City,
+                        address.Username,
+                        address.CreatedAt,
+                        address.UpdatedAt
                     };
 
-                    return Ok(addressResponse);
+                    return Ok(info);
                 }
                 else
                 {

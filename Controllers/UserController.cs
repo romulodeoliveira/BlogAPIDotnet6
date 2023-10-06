@@ -40,7 +40,7 @@ public class UserController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("owninfo")]
+    [HttpGet("get-own-user-information")]
     public IActionResult GetOwnUserInformation()
     {
         try
@@ -70,64 +70,79 @@ public class UserController : ControllerBase
         }
         catch (System.Exception error)
         {
-            return StatusCode(500, $"Ops... Não conseguimos coletar todas as informações do seu perfil. Tente novamente!\nDetalhe do erro: {error.Message}");
+            return StatusCode(500, $"Erro interno: {error.Message}");
         }
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(Register request)
+    public IActionResult Register(Register request)
     {
-        var existingUser = _userRepository.GetUserByUsername(request.Username);
-
-        if (existingUser != null)
+        try
         {
-            return BadRequest("Nome de usuário já está em uso.");
+            var existingUser = _userRepository.GetUserByUsername(request.Username);
+
+            if (existingUser != null)
+            {
+                return BadRequest("Nome de usuário já está em uso.");
+            }
+
+            var passwordHelper = new PasswordHelper();
+
+            if (!passwordHelper.CheckerStrongPassword(request.Password))
+            {
+                return BadRequest(
+                    "Senha não aceita. Insira uma senha de 6 a 12 caracteres e que tenha pelo menos uma letra maiuscula, uma minuscula, um numero e um caractere especial.");
+            }
+
+            passwordHelper.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+            var user = new UserModel()
+            {
+                Username = request.Username,
+                Email = request.Email,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt,
+                Role = Roles.User
+            };
+
+            _userRepository.AddUser(user);
+
+            return Ok("Usuário cadastrado com sucesso.");
         }
-        
-        var passwordHelper = new PasswordHelper();
-
-        if (!passwordHelper.CheckerStrongPassword(request.Password))
+        catch (Exception error)
         {
-            return BadRequest("Senha não aceita. Insira uma senha de 6 a 12 caracteres e que tenha pelo menos uma letra maiuscula, uma minuscula, um numero e um caractere especial.");
+            return StatusCode(500, $"Erro interno: {error.Message}");
         }
-
-        passwordHelper.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
-
-        var user = new UserModel()
-        {
-            Username = request.Username,
-            Email = request.Email,
-            PasswordHash = passwordHash,
-            PasswordSalt = passwordSalt,
-            Role = Roles.User
-        };
-
-        _userRepository.AddUser(user);
-
-        return Ok("Usuário criado com sucesso.");
     }
     
     [HttpPost("login")]
-    public async Task<ActionResult<string>> Login(Login request)
+    public IActionResult Login(Login request)
     {
-        var user = _userRepository.GetUserByUsername(request.Username);
-        
-        if (user == null)
+        try
         {
-            return BadRequest("User not found.");
+            var user = _userRepository.GetUserByUsername(request.Username);
+
+            if (user == null)
+            {
+                return BadRequest("User not found.");
+            }
+
+            var passwordHelper = new PasswordHelper();
+
+            if (!passwordHelper.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            {
+                return BadRequest("Wrong password.");
+            }
+
+            var tokenHelper = new TokenHelper();
+            string token = tokenHelper.CreateToken(user, _configuration);
+
+            return Ok(token);
         }
-
-        var passwordHelper = new PasswordHelper();
-
-        if (!passwordHelper.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+        catch (Exception error)
         {
-            return BadRequest("Wrong password.");
+            return StatusCode(500, $"Erro interno: {error.Message}");
         }
-
-        var tokenHelper = new TokenHelper();
-        string token = tokenHelper.CreateToken(user, _configuration);
-
-        return Ok(token);
     }
     
     [Authorize]
@@ -181,13 +196,13 @@ public class UserController : ControllerBase
         }
         catch (System.Exception error)
         {
-            return StatusCode(500, $"Ops... Não conseguimos atualizar seu usuário. Tente novamente!\nDetalhe do erro: {error.Message}");
+            return StatusCode(500, $"Erro interno: {error.Message}");
         }
     }
 
     [Authorize]
     [HttpDelete("delete/{user}")]
-    public IActionResult DeleteUser(string user)
+    public IActionResult DeleteUser([FromRoute] string user)
     {
         try
         {
@@ -213,7 +228,7 @@ public class UserController : ControllerBase
         }
         catch (System.Exception error)
         {
-            return StatusCode(500, $"Ops... Não conseguimos deletar seu perfil. Tente novamente!\nDetalhe do erro: {error.Message}");
+            return StatusCode(500, $"Erro interno: {error.Message}");
         }
     }
 }

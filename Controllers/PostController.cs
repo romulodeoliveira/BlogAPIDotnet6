@@ -28,6 +28,7 @@ public class PostController : ControllerBase
                 .OrderByDescending(p => p.CreatedAt)
                 .Select(post => new
                 {
+                    post.Id,
                     post.Slug,
                     post.Title,
                     post.Username,
@@ -57,6 +58,7 @@ public class PostController : ControllerBase
                 .OrderByDescending(p => p.CreatedAt)
                 .Select(post => new
                 {
+                    post.Id,
                     post.Slug,
                     post.Title,
                     post.Username,
@@ -85,6 +87,7 @@ public class PostController : ControllerBase
                 .OrderByDescending(p => p.CreatedAt)
                 .Select(post => new
                 {
+                    post.Id,
                     post.Slug,
                     post.Title,
                     post.Username,
@@ -154,6 +157,7 @@ public class PostController : ControllerBase
 
             var info = new
             {
+                post.Id,
                 post.Slug,
                 post.Title,
                 post.Username,
@@ -171,12 +175,12 @@ public class PostController : ControllerBase
     }
 
     [Authorize(Roles = Roles.Admin)]
-    [HttpPut("update-post")]
-    public IActionResult UpdatePost(Guid id, [FromBody] PostDto request)
+    [HttpPut("update-post/{postId}")]
+    public IActionResult UpdatePost([FromRoute] Guid postId, [FromBody] PostDto request)
     {
         try
         {
-            var post = _postRepository.GetPostById(id);
+            var post = _postRepository.GetPostById(postId);
             
             if (!string.IsNullOrEmpty(request.Title))
             {
@@ -210,6 +214,7 @@ public class PostController : ControllerBase
             
             var info = new
             {
+                post.Id,
                 post.Slug,
                 post.Title,
                 post.Username,
@@ -227,12 +232,12 @@ public class PostController : ControllerBase
     }
     
     [Authorize(Roles = Roles.Admin)]
-    [HttpDelete("delete-post")]
-    public IActionResult DeletePost(Guid id)
+    [HttpDelete("delete-post/{postId}")]
+    public IActionResult DeletePost([FromRoute] Guid postId)
     {
         try
         {
-            bool deleted = _postRepository.DeletePost(id);
+            bool deleted = _postRepository.DeletePost(postId);
                 
             if (deleted)
             {

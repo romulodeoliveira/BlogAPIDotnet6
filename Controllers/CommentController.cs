@@ -12,24 +12,28 @@ namespace BlogAPIDotnet6.Controllers;
 public class CommentController : ControllerBase
 {
     private readonly ICommentRepository _commentRepository;
-    private readonly IPostRepository _postRepository;
-    private readonly IUserRepository _userRepository;
 
-    public CommentController(ICommentRepository commentRepository, IPostRepository postRepository,
-        IUserRepository userRepository)
+    public CommentController(ICommentRepository commentRepository)
     {
         _commentRepository = commentRepository;
-        _postRepository = postRepository;
-        _userRepository = userRepository;
     }
 
     [HttpGet("list-comments-by-post")]
-    public IActionResult ListCommentsByPost(Guid id) // ID da Publicação
+    public IActionResult ListCommentsByPost(Guid postId) // ID da Publicação
     {
         try
         {
-            var comments = _commentRepository.GetAllCommentsForPublication(id)
+            var comments = _commentRepository.GetAllCommentsForPublication(postId)
                 .OrderByDescending(p => p.CreatedAt)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.Body,
+                    c.Username,
+                    c.PostId,
+                    c.CreatedAt,
+                    c.UpdatedAt
+                })
                 .ToList();
 
             return Ok(comments);
@@ -50,6 +54,15 @@ public class CommentController : ControllerBase
 
             var comments = _commentRepository.GetAllCommentsForUser(user)
                 .OrderByDescending(p => p.CreatedAt)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.Body,
+                    c.Username,
+                    c.PostId,
+                    c.CreatedAt,
+                    c.UpdatedAt
+                })
                 .ToList();
 
             if (user != null)
@@ -68,8 +81,8 @@ public class CommentController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("create-comment")]
-    public IActionResult CreatePost(Guid id, [FromBody] CreateCommentDto request)
+    [HttpPost("create-comment/{postId}")]
+    public IActionResult CreatePost([FromRoute] Guid postId, [FromBody] CreateCommentDto request)
     {
         try
         {
@@ -90,35 +103,21 @@ public class CommentController : ControllerBase
             
             var username = User.Identity.Name;
             
-            var user = _userRepository.GetUserByUsername(username);
-            var post = _postRepository.GetPostById(id);
-            if (user != null)
-            {
-                if (post.IsPublished)
-                {
-                    comment.Username = username;
-                    comment.User = user;
-                    comment.PostId = id;
-                    comment.Post = post;
-                    _commentRepository.AddComment(comment);
-                
-                    user.Comments.Add(comment);
-                    _userRepository.UpdateUser(user);
-                
-                    post.Comments.Add(comment);
-                    _postRepository.UpdatePost(post);
+            comment.Username = username;
+            comment.PostId = postId;
+            _commentRepository.AddComment(comment);
 
-                    return Ok(comment);
-                }
-                else
-                {
-                    return BadRequest("Postagem não publicada. Não é possivel comentar.");
-                }
-            }
-            else
+            var info = new
             {
-                return BadRequest("Usuário não encontrado.");
-            }
+                comment.Id,
+                comment.Body,
+                comment.Username,
+                comment.PostId,
+                comment.CreatedAt,
+                comment.UpdatedAt
+            };
+                
+            return Ok(info);
         }
         catch (Exception error)
         {
@@ -134,14 +133,13 @@ public class CommentController : ControllerBase
         {
             var user = User.Identity.Name;
             var comment = _commentRepository.GetCommentById(commentId);
-            var post = _postRepository.GetPostById(postId);
 
             if (comment == null)
             {
                 return NotFound("Comentário não encontrado.");
             }
 
-            if (post == null)
+            if (postId == null)
             {
                 return NotFound("Post não encontrado.");
             }
@@ -160,7 +158,17 @@ public class CommentController : ControllerBase
 
             _commentRepository.UpdateComment(comment);
             
-            return Ok(comment);
+            var info = new
+            {
+                comment.Id,
+                comment.Body,
+                comment.Username,
+                comment.PostId,
+                comment.CreatedAt,
+                comment.UpdatedAt
+            };
+                
+            return Ok(info);
         }
         catch (Exception error)
         {
@@ -176,14 +184,13 @@ public class CommentController : ControllerBase
         {
             var user = User.Identity.Name;
             var comment = _commentRepository.GetCommentById(commentId);
-            var post = _postRepository.GetPostById(postId);
 
             if (comment == null)
             {
                 return NotFound("Comentário não encontrado.");
             }
 
-            if (post == null)
+            if (postId == null)
             {
                 return NotFound("Post não encontrado.");
             }

@@ -20,7 +20,16 @@ public class CategoryController : ControllerBase
     [HttpGet("list-categories")]
     public IActionResult ListCategories()
     {
-        List<CategoryModel> categories = _categoryRepository.GetAllCategories();
+        var categories = _categoryRepository.GetAllCategories()
+            .Select(c => new
+            {
+                c.Id,
+                c.Title,
+                c.Username,
+                c.Posts,
+                c.CreatedAt,
+                c.UpdatedAt
+            });
         return Ok(categories);
     }
     
@@ -45,8 +54,18 @@ public class CategoryController : ControllerBase
             category.Username = username;
 
             _categoryRepository.AddCategory(category);
+
+            var info = new
+            {
+                category.Id,
+                category.Title,
+                category.Username,
+                category.Posts,
+                category.CreatedAt,
+                category.UpdatedAt
+            };
             
-            return Ok(category);
+            return Ok(info);
         }
         catch (Exception error)
         {
@@ -55,8 +74,8 @@ public class CategoryController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut]
-    public IActionResult UpdateCategory(Guid categoryId, [FromBody] UpdateCategory request)
+    [HttpPut("update-category/{categoryId}")]
+    public IActionResult UpdateCategory([FromRoute] Guid categoryId, [FromBody] UpdateCategory request)
     {
         try
         {
@@ -69,7 +88,17 @@ public class CategoryController : ControllerBase
 
             _categoryRepository.UpdateCategory(category);
             
-            return Ok();
+            var info = new
+            {
+                category.Id,
+                category.Title,
+                category.Username,
+                category.Posts,
+                category.CreatedAt,
+                category.UpdatedAt
+            };
+
+            return Ok(info);
         }
         catch (Exception error)
         {
@@ -78,8 +107,8 @@ public class CategoryController : ControllerBase
     }
     
     [Authorize]
-    [HttpDelete("delete-category")]
-    public IActionResult DeleteCategory(Guid categoryId)
+    [HttpDelete("delete-category/{categoryId}")]
+    public IActionResult DeleteCategory([FromRoute] Guid categoryId)
     {
         try
         {
