@@ -54,7 +54,7 @@ public class UserController : ControllerBase
                 return NotFound("Usuário não encontrado.");
             }
 
-            var userInfo = new
+            var info = new
             {
                 user.Username,
                 user.Email,
@@ -66,7 +66,7 @@ public class UserController : ControllerBase
                 user.UpdatedAt
             };
             
-            return Ok(userInfo);
+            return Ok(info);
         }
         catch (System.Exception error)
         {
@@ -96,6 +96,11 @@ public class UserController : ControllerBase
 
             passwordHelper.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
+            if (!EmailHelper.IsValidEmail(request.Email))
+            {
+                return BadRequest("Email inválido!");
+            }
+            
             var user = new UserModel()
             {
                 Username = request.Username,
@@ -106,8 +111,20 @@ public class UserController : ControllerBase
             };
 
             _userRepository.AddUser(user);
+            
+            var info = new
+            {
+                user.Username,
+                user.Email,
+                user.Firstname,
+                user.Lastname,
+                user.Role,
+                user.AddressId,
+                user.CreatedAt,
+                user.UpdatedAt
+            };
 
-            return Ok("Usuário cadastrado com sucesso.");
+            return Ok(info);
         }
         catch (Exception error)
         {
@@ -166,7 +183,14 @@ public class UserController : ControllerBase
 
             if (!string.IsNullOrWhiteSpace(request.Email))
             {
-                user.Email = request.Email;
+                if (EmailHelper.IsValidEmail(request.Email))
+                {
+                    user.Email = request.Email;
+                }
+                else
+                {
+                    return BadRequest("Email inválido!");
+                }
             }
             
             var passwordHelper = new PasswordHelper();
@@ -191,8 +215,20 @@ public class UserController : ControllerBase
             user.UpdatedAt = DateTime.UtcNow;
 
             _userRepository.UpdateUser(user);
+            
+            var info = new
+            {
+                user.Username,
+                user.Email,
+                user.Firstname,
+                user.Lastname,
+                user.Role,
+                user.AddressId,
+                user.CreatedAt,
+                user.UpdatedAt
+            };
 
-            return Ok("Usuário atualizado com sucesso.");
+            return Ok(info);
         }
         catch (System.Exception error)
         {
