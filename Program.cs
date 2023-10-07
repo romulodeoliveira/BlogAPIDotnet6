@@ -65,9 +65,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Banco de dados
+/* Banco de dados MariaDB
 string dbConfig = "Server=localhost;Port=3306;Database=blogtechapi;Uid=arch;Pwd=1234;";
 builder.Services.AddDbContextPool<DataContext>(options => options.UseMySql(dbConfig, ServerVersion.AutoDetect(dbConfig)));
+*/
+
+// Banco de dados SqLite
+string dbConfig = "Data Source=data.db";
+builder.Services.AddDbContextPool<DataContext>(options => options.UseSqlite(dbConfig));
 
 // Injeção de dependência
 builder.Services.AddScoped<IUserRepository, UserRepository>();
