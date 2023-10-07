@@ -23,6 +23,26 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    // informações personalizadas sobre a documentação do Swagger
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "1.0",
+        Title = "Blog.Net",
+        Description = "Projeto destinado a portfólio. Sinta-se à vontade ao utilizá-lo. :)",
+        Contact = new OpenApiContact
+        {
+            Name = "Romulo de Oliveira",
+            Email = "dev@romulodeoliveira.net",
+            Url = new Uri("https://romulodeoliveira.net/"),
+        },
+        License = new OpenApiLicense
+        {
+            Name = "Licença",
+            Url = new Uri("https://github.com/romulodeoliveira/BlogAPIDotnet6/blob/main/LICENSE.md"),
+        }
+    });
+    
+    // Informações do oauth2
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
     {
         Description = "Standard Authorization header using the Bearer scheme (\"bearer {token}\")",
@@ -45,9 +65,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+// Banco de dados
 string dbConfig = "Server=localhost;Port=3306;Database=blogtechapi;Uid=arch;Pwd=1234;";
 builder.Services.AddDbContextPool<DataContext>(options => options.UseMySql(dbConfig, ServerVersion.AutoDetect(dbConfig)));
 
+// Injeção de dependência
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
