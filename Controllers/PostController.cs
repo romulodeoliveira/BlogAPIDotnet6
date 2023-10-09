@@ -2,6 +2,7 @@ using BlogAPIDotnet6.DTOs;
 using BlogAPIDotnet6.Helper;
 using BlogAPIDotnet6.Models;
 using BlogAPIDotnet6.Repositories.Interfaces;
+using BlogAPIDotnet6.Validators.Post;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -53,6 +54,7 @@ public class PostController : ControllerBase
     {
         try
         {
+            var user = User.Identity.Name;
             var posts = _postRepository.GetAllPosts()
                 .Where(p => !p.IsPublished)
                 .OrderByDescending(p => p.CreatedAt)
@@ -97,7 +99,7 @@ public class PostController : ControllerBase
                     post.UpdatedAt
                 })
                 .ToList();
-
+            
             return Ok(posts);
         }
         catch (Exception error)
@@ -105,10 +107,10 @@ public class PostController : ControllerBase
             return StatusCode(500, $"Erro interno do servidor: {error.Message}");
         }
     }
-
+    
     [Authorize(Roles = Roles.Admin)]
     [HttpPost("create-post")]
-    public IActionResult CreatePost(bool isPublished, [FromBody] PostDto request)
+    public IActionResult CreatePost([FromBody] PostDto request)
     {
         try
         {
@@ -147,8 +149,15 @@ public class PostController : ControllerBase
             {
                 post.CategoryId = request.CategoryId;
             }
-            
-            post.IsPublished = isPublished;
+
+            if (request.IsPublished == true || request.IsPublished == false)
+            {
+                post.IsPublished = request.IsPublished;
+            }
+            else
+            {
+                return BadRequest("É necessário informar se o post será publicado ou não.");
+            }
 
             var username = User.Identity.Name;
             post.Username = username;
