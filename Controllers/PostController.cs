@@ -35,6 +35,38 @@ public class PostController : ControllerBase
                     post.Username,
                     post.IsPublished,
                     post.Comments,
+                    post.CategoryId,
+                    post.CreatedAt,
+                    post.UpdatedAt
+                })
+                .ToList();
+
+            return Ok(posts);
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, $"Erro interno do servidor: {error.Message}");
+        }
+    }
+    
+    [HttpGet("list-published-posts-by-category")]
+    public IActionResult ListPublishedPostsByCategory(Guid categoryId)
+    {
+        try
+        {
+            var posts = _postRepository.GetAllPosts()
+                .Where(p => p.IsPublished)
+                .Where(p => p.CategoryId == categoryId)
+                .OrderByDescending(p => p.CreatedAt)
+                .Select(post => new
+                {
+                    post.Id,
+                    post.Slug,
+                    post.Title,
+                    post.Username,
+                    post.IsPublished,
+                    post.Comments,
+                    post.CategoryId,
                     post.CreatedAt,
                     post.UpdatedAt
                 })
@@ -66,6 +98,7 @@ public class PostController : ControllerBase
                     post.Username,
                     post.IsPublished,
                     post.Comments,
+                    post.CategoryId,
                     post.CreatedAt,
                     post.UpdatedAt
                 })
@@ -95,6 +128,7 @@ public class PostController : ControllerBase
                     post.Username,
                     post.IsPublished,
                     post.Comments,
+                    post.CategoryId,
                     post.CreatedAt,
                     post.UpdatedAt
                 })
@@ -172,6 +206,7 @@ public class PostController : ControllerBase
                 post.Username,
                 post.IsPublished,
                 post.Comments,
+                post.CategoryId,
                 post.CreatedAt,
                 post.UpdatedAt
             };
@@ -229,6 +264,7 @@ public class PostController : ControllerBase
                 post.Username,
                 post.IsPublished,
                 post.Comments,
+                post.CategoryId,
                 post.CreatedAt,
                 post.UpdatedAt
             };
