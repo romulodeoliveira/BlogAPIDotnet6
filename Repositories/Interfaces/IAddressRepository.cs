@@ -9,5 +9,5 @@ public interface IAddressRepository
     List<AddressModel> GetAllAddresses();
     (bool Success, string Message) AddAddress(CreateAddressDto address, string username);
     (bool Success, string Message) UpdateAddress(UpdateAddressDto addressDto, string username);
-    bool DeleteAddress(Guid id);
+    (bool Success, string Message) DeleteAddress(Guid addressId, string username);
 }

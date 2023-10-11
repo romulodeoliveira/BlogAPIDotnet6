@@ -91,34 +91,58 @@ public class AddressRepository : IAddressRepository
     {
         try
         {
-            var address = new AddressModel();
             var user = _userRepository.GetUserByUsername(username);
+
+            if (user == null)
+            {
+                return (false, "Usuário não encontrado.");
+            }
+
+            var local = GetAddressById(user.AddressId.Value);
+
+            if (!string.IsNullOrEmpty(request.City))
+            {
+                local.City = request.City;
+            }
+
+            if (!string.IsNullOrEmpty(request.State))
+            {
+                local.State = request.State;
+            }
+
+            if (!string.IsNullOrEmpty(request.Country))
+            {
+                local.Country = request.Country;
+            }
+
+            local.UpdatedAt = DateTime.UtcNow;
+
+            _dataContext.SaveChanges();
+
+            return (true, "Endereço atualizado.");
+        }
+        catch (Exception error)
+        {
+            return (false, $"Erro interno do servidor: {error.Message}");
+        }
+    }
+
+    public (bool Success, string Message) DeleteAddress(Guid addressId, string username)
+    {
+        try
+        {
+            var address = GetAddressById(addressId);
+            var user = _userRepository.GetUserByUsername(username);
+            
+            var local = GetAddressById(address.Id);
             if (user != null)
             {
-                var local = _dataContext.Set<AddressModel>().Local.FirstOrDefault(entry => entry.Id.Equals(address.Id));
                 if (local != null)
                 {
-                    if (!string.IsNullOrEmpty(request.City))
-                    {
-                        address.City = request.City;
-                    }
-
-                    if (!string.IsNullOrEmpty(request.State))
-                    {
-                        address.State = request.State;
-                    }
-
-                    if (!string.IsNullOrEmpty(request.Country))
-                    {
-                        address.Country = request.Country;
-                    }
-
-                    address.UpdatedAt = DateTime.UtcNow;
-
-                    _dataContext.Entry(address).State = EntityState.Modified;
+                    _dataContext.Addresses.Remove(address);
                     _dataContext.SaveChanges();
 
-                    return (true, "Endereço atualizado.");
+                    return (true, "Endereço excluído com sucesso.");
                 }
                 else
                 {
@@ -134,26 +158,5 @@ public class AddressRepository : IAddressRepository
         {
             return (false, $"Erro interno do servidor: {error.Message}");
         }
-    }
-
-    public bool DeleteAddress(Guid id)
-    {
-        AddressModel address = GetAddressById(id);
-
-        if (address == null)
-        {
-            throw new System.Exception("Houve um erro ao excluir o endereço.");
-        }
-
-        var local = _dataContext.Set<AddressModel>().Local.FirstOrDefault(entry => entry.Id.Equals(address.Id));
-        if (local != null)
-        {
-            _dataContext.Entry(local).State = EntityState.Detached;
-        }
-
-        _dataContext.Addresses.Remove(address);
-        _dataContext.SaveChanges();
-
-        return true;
     }
 }

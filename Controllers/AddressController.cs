@@ -1,8 +1,4 @@
-using System.Security.Claims;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using BlogAPIDotnet6.DTOs;
-using BlogAPIDotnet6.Models;
 using BlogAPIDotnet6.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -80,31 +76,21 @@ public class AddressController : ControllerBase
     }
 
     [Authorize]
-    [HttpDelete("delete")]
-    public IActionResult DeleteUser()
+    [HttpDelete("delete/{addressId}")]
+    public IActionResult DeleteUser([FromRoute] Guid addressId)
     {
         try
         {
             var username = User.Identity.Name;
-            
-            var user = _userRepository.GetUserByUsername(username);
+            var deleted = _addressRepository.DeleteAddress(addressId, username);
 
-            if (user.AddressId != null)
+            if (deleted.Success)
             {
-                bool deleted = _addressRepository.DeleteAddress(user.AddressId.Value);
-
-                if (deleted)
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return NotFound("Endereço não encontrado.");
-                } 
+                return Ok(deleted.Message);
             }
             else
             {
-                return BadRequest("Não foi possível deletar o endereço. Nenhum endereço encontrado.");
+                return NotFound(deleted.Message);
             }
         }
         catch (System.Exception error)
