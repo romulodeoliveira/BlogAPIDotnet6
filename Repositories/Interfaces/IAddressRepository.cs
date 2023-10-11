@@ -8,6 +8,6 @@ public interface IAddressRepository
     AddressModel GetAddressById(Guid id);
     List<AddressModel> GetAllAddresses();
     (bool Success, string Message) AddAddress(CreateAddressDto address, string username);
-    AddressModel UpdateAddress(AddressModel address);
+    (bool Success, string Message) UpdateAddress(UpdateAddressDto addressDto, string username);
     bool DeleteAddress(Guid id);
 }

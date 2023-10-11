@@ -1,6 +1,6 @@
 namespace BlogAPIDotnet6.DTOs;
 
-public class UpdateAddress
+public class UpdateAddressDto
 {
     public string? City { get; set; }
     public string? State { get; set; }

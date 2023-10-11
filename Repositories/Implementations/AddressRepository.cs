@@ -74,7 +74,7 @@ public class AddressRepository : IAddressRepository
                 _dataContext.Addresses.Add(address);
                 _dataContext.SaveChanges();
                 
-                return (true, "Endereço atualizado.");
+                return (true, "Endereço cadastrado.");
             }
             else
             {
@@ -87,12 +87,53 @@ public class AddressRepository : IAddressRepository
         }
     }
 
-    public AddressModel UpdateAddress(AddressModel address)
+    public (bool Success, string Message) UpdateAddress(UpdateAddressDto request, string username)
     {
-        _dataContext.Entry(address).State = EntityState.Modified;
-        _dataContext.SaveChanges();
+        try
+        {
+            var address = new AddressModel();
+            var user = _userRepository.GetUserByUsername(username);
+            if (user != null)
+            {
+                var local = _dataContext.Set<AddressModel>().Local.FirstOrDefault(entry => entry.Id.Equals(address.Id));
+                if (local != null)
+                {
+                    if (!string.IsNullOrEmpty(request.City))
+                    {
+                        address.City = request.City;
+                    }
 
-        return address;
+                    if (!string.IsNullOrEmpty(request.State))
+                    {
+                        address.State = request.State;
+                    }
+
+                    if (!string.IsNullOrEmpty(request.Country))
+                    {
+                        address.Country = request.Country;
+                    }
+
+                    address.UpdatedAt = DateTime.UtcNow;
+
+                    _dataContext.Entry(address).State = EntityState.Modified;
+                    _dataContext.SaveChanges();
+
+                    return (true, "Endereço atualizado.");
+                }
+                else
+                {
+                    return (false, "Endereço não encontrado.");
+                }
+            }
+            else
+            {
+                return (false, "Usuário não encontrado.");
+            }
+        }
+        catch (Exception error)
+        {
+            return (false, $"Erro interno do servidor: {error.Message}");
+        }
     }
 
     public bool DeleteAddress(Guid id)

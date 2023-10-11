@@ -57,49 +57,20 @@ public class AddressController : ControllerBase
 
     [Authorize]
     [HttpPut("update-address")]
-    public IActionResult UpdateAddress([FromBody] CreateAddressDto request)
+    public IActionResult UpdateAddress([FromBody] UpdateAddressDto request)
     {
         try
         {
             var username = User.Identity.Name;
+            var response = _addressRepository.UpdateAddress(request, username);
             
-            var user = _userRepository.GetUserByUsername(username);
-
-            if (user != null)
+            if (response.Success)
             {
-                var address = _addressRepository.GetAllAddresses().FirstOrDefault(a => a.Username == username);
-
-                if (address != null)
-                {
-                    if (!string.IsNullOrEmpty(request.City))
-                    {
-                        address.City = request.City;
-                    }
-
-                    if (!string.IsNullOrEmpty(request.State))
-                    {
-                        address.State = request.State;
-                    }
-
-                    if (!string.IsNullOrEmpty(request.Country))
-                    {
-                        address.Country = request.Country;
-                    }
-                    
-                    address.UpdatedAt = DateTime.UtcNow;
-
-                    _addressRepository.UpdateAddress(address);
-
-                    return Ok();
-                }
-                else
-                {
-                    return BadRequest("Não foi possível atualizar o endereço. Endereço não encontrado.");
-                }
+                return Ok(response.Message);
             }
             else
             {
-                return BadRequest("Não foi possível atualizar o endereço. Usuário não encontrado.");
+                return BadRequest(response.Message);
             }
         }
         catch (System.Exception error)
