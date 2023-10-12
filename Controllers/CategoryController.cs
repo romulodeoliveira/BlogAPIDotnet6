@@ -39,33 +39,17 @@ public class CategoryController : ControllerBase
     {
         try
         {
-            var category = new CategoryModel();
+            var username = User.Identity.Name;
+            var response = _categoryRepository.AddCategory(request, username);
 
-            if (!string.IsNullOrEmpty(request.Title))
+            if (response.Success)
             {
-                category.Title = request.Title;
+                return Ok(response.Message);
             }
             else
             {
-                return BadRequest("O título da categoria não pode estar em branco.");
+                return BadRequest(response.Message);
             }
-
-            var username = User.Identity.Name;
-            category.Username = username;
-
-            _categoryRepository.AddCategory(category);
-
-            var info = new
-            {
-                category.Id,
-                category.Title,
-                category.Username,
-                category.Posts,
-                category.CreatedAt,
-                category.UpdatedAt
-            };
-            
-            return Ok(info);
         }
         catch (Exception error)
         {

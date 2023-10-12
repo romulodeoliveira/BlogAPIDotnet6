@@ -1,4 +1,5 @@
 using BlogAPIDotnet6.Data;
+using BlogAPIDotnet6.DTOs.Category;
 using BlogAPIDotnet6.Models;
 using BlogAPIDotnet6.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -8,10 +9,12 @@ namespace BlogAPIDotnet6.Repositories.Implementations;
 public class CategoryRepository : ICategoryRepository
 {
     private readonly DataContext _dataContext;
-
-    public CategoryRepository(DataContext dataContext)
+    private readonly IUserRepository _userRepository;
+    
+    public CategoryRepository(DataContext dataContext, IUserRepository userRepository)
     {
         _dataContext = dataContext;
+        _userRepository = userRepository;
     }
     
     public CategoryModel GetCategoryById(Guid id)
@@ -24,11 +27,40 @@ public class CategoryRepository : ICategoryRepository
         return _dataContext.Categories.ToList();
     }
 
-    public CategoryModel AddCategory(CategoryModel category)
+    public (bool Success, string Message) AddCategory(CreateCategory request, string username)
     {
-        _dataContext.Categories.Add(category);
-        _dataContext.SaveChanges();
-        return category;
+        try
+        {
+            var category = new CategoryModel();
+            
+            if (!string.IsNullOrEmpty(request.Title))
+            {
+                category.Title = request.Title;
+            }
+            else
+            {
+                return (false, "O título não pode estar em branco.");
+            }
+            
+            var user = _userRepository.GetUserByUsername(username);
+            if (user != null)
+            {
+                category.Username = username;
+                category.User = user;
+                
+                _dataContext.Categories.Add(category);
+                _dataContext.SaveChanges();
+                return (true, "Categoria criada com sucesso.");
+            }
+            else
+            {
+                return (false, "Usuário não encontrado.");
+            }
+        }
+        catch (Exception error)
+        {
+            return (false, $"Erro interno do servidor: {error.Message}");
+        }
     }
 
     public CategoryModel UpdateCategory(CategoryModel category)
