@@ -9,5 +9,5 @@ public interface ICategoryRepository
     List<CategoryModel> GetAllCategories();
     (bool Success, string Message) AddCategory(CreateCategory category, string username);
     (bool Success, string Message) UpdateCategory(Guid categoryId, UpdateCategory category, string username);
-    bool DeleteCategory(Guid id);
+    (bool Success, string Message) DeleteCategory(Guid id, string username);
 }

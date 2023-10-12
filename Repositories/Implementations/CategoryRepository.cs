@@ -112,18 +112,32 @@ public class CategoryRepository : ICategoryRepository
         }
     }
 
-    public bool DeleteCategory(Guid id)
+    public (bool Success, string Message) DeleteCategory(Guid id, string username)
     {
-        CategoryModel category = GetCategoryById(id);
-
-        if (category == null)
+        var user = _userRepository.GetUserByUsername(username);
+        if (user != null)
         {
-            throw new System.Exception("Houve um erro ao excluir a categoria.");
+            if (user.Role == Roles.Admin)
+            {
+                CategoryModel category = GetCategoryById(id);
+                if (category == null)
+                {
+                    return (false, "Houve um erro ao excluir a categoria.");
+                }
+
+                _dataContext.Categories.Remove(category);
+                _dataContext.SaveChanges();
+
+                return (true, "Categoria excluída com sucesso.");
+            }
+            else
+            {
+                return (false, "Você não tem permissão para essa operação.");
+            }
         }
-
-        _dataContext.Categories.Remove(category);
-        _dataContext.SaveChanges();
-
-        return true;
+        else
+        {
+            return (false, "Usuário não encontrado.");
+        }
     }
 }

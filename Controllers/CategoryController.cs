@@ -87,15 +87,16 @@ public class CategoryController : ControllerBase
     {
         try
         {
-            bool deleted = _categoryRepository.DeleteCategory(categoryId);
+            var username = User.Identity.Name;
+            var response = _categoryRepository.DeleteCategory(categoryId, username);
 
-            if (deleted)
+            if (response.Success)
             {
-                return Ok("Categoria deletada com sucesso.");
+                return Ok(response.Message);
             }
             else
             {
-                return NotFound("Categoria não encontrada.");
+                return BadRequest(response.Message);
             }
         }
         catch (Exception error)
