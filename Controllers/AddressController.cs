@@ -22,9 +22,16 @@ public class AddressController : ControllerBase
     [HttpGet("list-address")]
     public IActionResult ListAddress()
     {
-        var response = _addressRepository.GetAllAddresses();
-            
-        return Ok(response);
+        try
+        {
+            var response = _addressRepository.GetAllAddresses();
+
+            return Ok(response);
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, $"Erro interno do servidor: {error.Message}");
+        }
     }
 
     [Authorize]
