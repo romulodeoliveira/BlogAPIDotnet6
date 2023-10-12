@@ -8,6 +8,6 @@ public interface ICategoryRepository
     CategoryModel GetCategoryById(Guid id);
     List<CategoryModel> GetAllCategories();
     (bool Success, string Message) AddCategory(CreateCategory category, string username);
-    CategoryModel UpdateCategory(CategoryModel category);
+    (bool Success, string Message) UpdateCategory(Guid categoryId, UpdateCategory category, string username);
     bool DeleteCategory(Guid id);
 }

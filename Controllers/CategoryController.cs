@@ -63,26 +63,17 @@ public class CategoryController : ControllerBase
     {
         try
         {
-            var category = _categoryRepository.GetCategoryById(categoryId);
+            var username = User.Identity.Name;
+            var response = _categoryRepository.UpdateCategory(categoryId, request, username);
 
-            if (!string.IsNullOrEmpty(request.Title))
+            if (response.Success)
             {
-                category.Title = request.Title;
+                return Ok(response.Message);
             }
-
-            _categoryRepository.UpdateCategory(category);
-            
-            var info = new
+            else
             {
-                category.Id,
-                category.Title,
-                category.Username,
-                category.Posts,
-                category.CreatedAt,
-                category.UpdatedAt
-            };
-
-            return Ok(info);
+                return BadRequest(response.Message);
+            }
         }
         catch (Exception error)
         {

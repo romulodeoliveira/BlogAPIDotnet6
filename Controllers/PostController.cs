@@ -2,7 +2,6 @@ using BlogAPIDotnet6.DTOs;
 using BlogAPIDotnet6.Helper;
 using BlogAPIDotnet6.Models;
 using BlogAPIDotnet6.Repositories.Interfaces;
-using BlogAPIDotnet6.Validators.Post;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,5 +1,6 @@
 using BlogAPIDotnet6.Data;
 using BlogAPIDotnet6.DTOs.Category;
+using BlogAPIDotnet6.Helper;
 using BlogAPIDotnet6.Models;
 using BlogAPIDotnet6.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -31,26 +32,33 @@ public class CategoryRepository : ICategoryRepository
     {
         try
         {
-            var category = new CategoryModel();
-            
-            if (!string.IsNullOrEmpty(request.Title))
-            {
-                category.Title = request.Title;
-            }
-            else
-            {
-                return (false, "O título não pode estar em branco.");
-            }
-            
             var user = _userRepository.GetUserByUsername(username);
             if (user != null)
             {
-                category.Username = username;
-                category.User = user;
+                if (user.Role == Roles.Admin)
+                {
+                    var category = new CategoryModel();
+            
+                    if (!string.IsNullOrEmpty(request.Title))
+                    {
+                        category.Title = request.Title;
+                    }
+                    else
+                    {
+                        return (false, "O título não pode estar em branco.");
+                    }
+                    
+                    category.Username = username;
+                    category.User = user;
                 
-                _dataContext.Categories.Add(category);
-                _dataContext.SaveChanges();
-                return (true, "Categoria criada com sucesso.");
+                    _dataContext.Categories.Add(category);
+                    _dataContext.SaveChanges();
+                    return (true, "Categoria criada com sucesso.");
+                }
+                else
+                {
+                    return (false, "Você não tem permissão para essa operação.");
+                }
             }
             else
             {
@@ -63,11 +71,45 @@ public class CategoryRepository : ICategoryRepository
         }
     }
 
-    public CategoryModel UpdateCategory(CategoryModel category)
+    public (bool Success, string Message) UpdateCategory(Guid categoryId, UpdateCategory request, string username)
     {
-        _dataContext.Entry(category).State = EntityState.Modified;
-        _dataContext.SaveChanges();
-        return category;
+        try
+        {
+            var user = _userRepository.GetUserByUsername(username);
+            if (user != null)
+            {
+                if (user.Role == Roles.Admin)
+                {
+                    var category = GetCategoryById(categoryId);
+
+                    if (!string.IsNullOrEmpty(request.Title))
+                    {
+                        category.Title = request.Title;
+                    }
+                    
+                    category.UpdatedAt = DateTime.UtcNow;
+
+                    category.Username = username;
+                    category.User = user;
+                
+                    _dataContext.Entry(category).State = EntityState.Modified;
+                    _dataContext.SaveChanges();
+                    return (true, "Categoria atualizada com sucesso.");
+                }
+                else
+                {
+                    return (false, "Você não tem permissão para essa operação.");
+                }
+            }
+            else
+            {
+                return (false, "Usuário não encontrado.");
+            }
+        }
+        catch (Exception error)
+        {
+            return (false, $"Erro interno do servidor: {error.Message}");
+        }
     }
 
     public bool DeleteCategory(Guid id)
